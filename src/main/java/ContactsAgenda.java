@@ -13,9 +13,11 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 import static Ads.Ads.isFlagShowAds;
+import static Constants.ActivationKey.verifyActivationKey;
 
 /**
  * Created by Vult on 01-Jun-18.
+ * The main body... the soul... the mind...
  */
 public class ContactsAgenda {
     private static FileMenuForm fileMenuForm = new FileMenuForm();
@@ -44,15 +46,24 @@ public class ContactsAgenda {
 
             }
         });
-
-        FileMenuForm.exitApp.addActionListener(new ActionListener() {
+        FileMenuForm.getExitApp().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                int response = JOptionPane.showConfirmDialog(null, "Unsaved changes will be lost.", "Confirm",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (response == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                }
             }
         });
-        FileMenuForm.registerApp.addActionListener(new ActionListener() {
+        FileMenuForm.getRegisterApp().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Ads.setFlagShowAds(false);
+                String inputActivationKey = JOptionPane.showInputDialog("Enter activation key:");
+                if (verifyActivationKey(inputActivationKey)) {
+                    Ads.setFlagShowAds(false);
+                } else {
+                    JOptionPane.showConfirmDialog(null, "Activation key is incorrect !", "Invalid key",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         orderButton.addActionListener(new ActionListener() {
@@ -72,14 +83,15 @@ public class ContactsAgenda {
         });
         addContactButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+                ContactWindow contactWindow = new ContactWindow();
+                contactWindow.pack();
+                contactWindow.setVisible(true);
             }
         });
         customFilterTextField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 customFilterText = customFilterTextField.getText();
-                System.out.println(customFilterText);
                 refreshModel();
             }
         });
@@ -88,10 +100,10 @@ public class ContactsAgenda {
     public static void main(String[] args) {
         AdsForm adsForm = new AdsForm();
         adsForm.addAdsPictureToPanel();
-        JFrame frame = new JFrame("ContactsAgenda");
+        JFrame frame = new JFrame("Contacts Agenda");
         frame.setContentPane(new ContactsAgenda().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setJMenuBar(FileMenuForm.menuBar);
+        frame.setJMenuBar(FileMenuForm.getMenuBar());
         frame.add(adsForm, new GridConstraints(4, 0, 1, 5, 0, 3, 1, 4, new Dimension(-1, 100), new Dimension(-1, 100), new Dimension(-1, 100)));
         frame.pack();
         frame.setVisible(true);
@@ -104,6 +116,7 @@ public class ContactsAgenda {
                 e.printStackTrace();
             }
             ads.start();
+            Ads.setModeShareware(!isFlagShowAds());
         }
     }
 

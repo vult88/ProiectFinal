@@ -8,14 +8,14 @@ import javax.swing.*;
  * designer does not support jMenuBar, jMenu or jMenuItem
  */
 public class FileMenuForm {
-    public static JMenuBar menuBar;
-    public static JMenu fileMenu;
-    public static JMenu helpMenu;
-    public static JMenuItem openFile;
-    public static JMenuItem saveFile;
-    public static JMenuItem exitApp;
-    public static JMenuItem registerApp;
-    public static JMenuItem aboutApp;
+    private static JMenuBar menuBar;
+    private static JMenu fileMenu;
+    private static JMenu helpMenu;
+    private static JMenuItem openFile;
+    private static JMenuItem saveFile;
+    private static JMenuItem exitApp;
+    private static JMenuItem registerApp;
+    private static JMenuItem aboutApp;
 
     public FileMenuForm() {
 // Create the menuBar
@@ -44,5 +44,25 @@ public class FileMenuForm {
 
         helpMenu.add(registerApp);
         helpMenu.add(aboutApp);
+    }
+
+    public static JMenuBar getMenuBar() {
+        return menuBar;
+    }
+
+    public static JMenuItem getExitApp() {
+        return exitApp;
+    }
+
+    public static JMenuItem getRegisterApp() {
+        return registerApp;
+    }
+
+    public static void setEnabledOpenFile(boolean setterEnabled) {
+        openFile.setEnabled(setterEnabled);
+    }
+
+    public static void setEnabledSaveFile(boolean setterEnabled) {
+        saveFile.setEnabled(setterEnabled);
     }
 }
