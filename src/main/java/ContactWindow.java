@@ -1,11 +1,18 @@
-import Enums.TelephoneType;
-import Exceptions.DateInTheFutureException;
+import enums.TelephoneType;
+import exceptions.InvalidDateFormatException;
+import model.Agenda;
+import model.Contact;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ContactWindow extends JDialog {
+    static final int NEW_CONTACT = 1;
+    static final int MODIFY_CONTACT = 2;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -13,26 +20,24 @@ public class ContactWindow extends JDialog {
     private JTextField lastNameTextField;
     private JTextField telephoneNumberTextField;
     private JTextField dateOfBirthTextField;
-    private JComboBox telephoneTypeComboBox;
+    private JComboBox<TelephoneType> telephoneTypeComboBox;
 
-    public ContactWindow() {
+    ContactWindow(Contact contact, int windowOption) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+        setTitle(windowOption == NEW_CONTACT ? "New Contact" : "Modify contact");
+        setLocation(300, 300);
 
         setComboBoxModel();
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        if (windowOption == MODIFY_CONTACT) {
+            populateFieldsForUpdate(contact);
+        }
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonOK.addActionListener((e) -> onOK(contact, windowOption));
+
+        buttonCancel.addActionListener((e) -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -43,46 +48,36 @@ public class ContactWindow extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction((e) -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
+    private void onOK(Contact contact, int windowOption) {
         try {
             checkValidations();
+            if (windowOption == NEW_CONTACT) {
+                Contact newContact = new Contact(firstNameTextField.getText(),
+                        lastNameTextField.getText(),
+                        convertStringToLocalDate(dateOfBirthTextField.getText()),
+                        telephoneNumberTextField.getText(),
+                        (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
+                Agenda.addContact(newContact);
+            } else {
+                contact.setFirstName(firstNameTextField.getText());
+                contact.setLastName(lastNameTextField.getText());
+                contact.setDateOfBirth(convertStringToLocalDate(dateOfBirthTextField.getText()));
+                contact.setPhoneNumber(telephoneNumberTextField.getText(), (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
+                contact.setTelephoneType((TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
+            }
+            dispose();
         } catch (Exception e) {
             JOptionPane.showConfirmDialog(null, e.getMessage(), "Invalid data",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
         }
-        dispose();
     }
 
     private void onCancel() {
         // add your code here if necessary
         dispose();
-    }
-
-    public String getFirstNameValue() {
-        return firstNameTextField.getText();
-    }
-
-    public String getLastNameValue() {
-        return lastNameTextField.getText();
-    }
-
-    public String getTelephoneNumberValue() {
-        return telephoneNumberTextField.getText();
-    }
-
-    public LocalDate getDateOfBirthTextField() {
-        return convertStringToLocalDate(dateOfBirthTextField.getText());
-    }
-
-    public JComboBox getTelephoneTypeComboBox() {
-        return telephoneTypeComboBox;
     }
 
     private LocalDate convertStringToLocalDate(String date) {
@@ -95,16 +90,26 @@ public class ContactWindow extends JDialog {
 
     private void checkValidations() throws Exception {
 
-        LocalDate dateOfBirth = getDateOfBirthTextField();
-        if (dateOfBirth.isAfter(LocalDate.now())) {
-            throw new DateInTheFutureException(dateOfBirth);
+        String regex = "\\d{2}\\.\\d{2}\\.\\d{4}";
+
+        if (!dateOfBirthTextField.getText().matches(regex)) {
+            System.out.println(regex);
+            throw new InvalidDateFormatException("Date of birth is not a valid format. Please input a date using the format DD.MM.YYYY");
         }
     }
 
     private void setComboBoxModel() {
-        DefaultComboBoxModel telephoneTypeComboBoxModel = new DefaultComboBoxModel();
+        DefaultComboBoxModel<TelephoneType> telephoneTypeComboBoxModel = new DefaultComboBoxModel<>();
         telephoneTypeComboBoxModel.addElement(TelephoneType.Mobile);
         telephoneTypeComboBoxModel.addElement(TelephoneType.Fixed);
         telephoneTypeComboBox.setModel(telephoneTypeComboBoxModel);
+    }
+
+    private void populateFieldsForUpdate(Contact contact) {
+        firstNameTextField.setText(contact.getFirstName());
+        lastNameTextField.setText(contact.getLastName());
+        dateOfBirthTextField.setText(contact.getDateOfBirth().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        telephoneNumberTextField.setText(contact.getPhoneNumber());
+        telephoneTypeComboBox.setSelectedItem(contact.getTelephoneType());
     }
 }

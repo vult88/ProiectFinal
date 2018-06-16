@@ -1,4 +1,4 @@
-package Constants;
+package constants;
 
 /**
  * Created by Vult on 05-Jun-18.

@@ -1,4 +1,4 @@
-package Exceptions;
+package exceptions;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import java.io.IOException;
  * Exception class when the date has an invalid format
  */
 public class InvalidDateFormatException extends IOException {
-    public InvalidDateFormatException(String date) {
-        super(date + " is not a valid format. Please input a date using the format DD.MM.YYYY");
+    public InvalidDateFormatException(String message) {
+        super(message);
     }
 }

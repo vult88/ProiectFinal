@@ -1,21 +1,21 @@
-package Ads;
+package ads;
 
-import Forms.FileMenuForm;
+import forms.FileMenuForm;
 
 import javax.swing.*;
 import java.io.File;
 
-import static Forms.AdsForm.setAdsPictureIcon;
+import static forms.AdsForm.setAdsPictureIcon;
 
 /**
  * Created by Vult on 02-Jun-18.
- * Class to deal with the Ads
+ * Class to deal with the ads
  */
 
 public class Ads extends Thread {
     private static boolean flagShowAds = true;
     private static ImageIcon banner;
-    private static File adsFilePath = new File(File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + "Ads");
+    private static File adsFilePath = new File(File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + "ads");
     private File[] ads;
     private int currentBannerPosition = 0;
     private int previousBannerPosition = 0;
