@@ -61,12 +61,22 @@ public class ContactWindow extends JDialog {
                         telephoneNumberTextField.getText(),
                         (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
                 Agenda.addContact(newContact);
+                if (newContact.getDateOfBirth().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
+                        newContact.getDateOfBirth().getMonth() == LocalDate.now().getMonth()) {
+                    JOptionPane.showConfirmDialog(null, "La multi ani " + newContact.getFirstName() + " " + newContact.getLastName() + " !", "Happy birthday!",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                }
             } else {
                 contact.setFirstName(firstNameTextField.getText());
                 contact.setLastName(lastNameTextField.getText());
                 contact.setDateOfBirth(convertStringToLocalDate(dateOfBirthTextField.getText()));
                 contact.setPhoneNumber(telephoneNumberTextField.getText(), (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
                 contact.setTelephoneType((TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
+                if (contact.getDateOfBirth().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
+                        contact.getDateOfBirth().getMonth() == LocalDate.now().getMonth()) {
+                    JOptionPane.showConfirmDialog(null, "La multi ani " + contact.getFirstName() + " " + contact.getLastName() + " !", "Happy birthday!",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                }
             }
             dispose();
         } catch (Exception e) {

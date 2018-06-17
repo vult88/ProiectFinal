@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.DuplicateContactException;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,8 +13,11 @@ import java.util.Set;
 public class Agenda implements Serializable {
     private static Set<Contact> contacts = new HashSet<>();
 
-    public static void addContact(Contact contact) {
-        contacts.add(contact);
+    public static void addContact(Contact contact) throws Exception {
+        if (!contacts.add(contact)) {
+            throw new DuplicateContactException("Contact already exists in Agenda !");
+        }
+        ;
     }
 
     public static void removeContact(Contact contact) {

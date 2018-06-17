@@ -24,11 +24,8 @@ public class Contact {
     private Enum<TelephoneType> telephoneType;
 
     public Contact(String firstName, String lastName, LocalDate dateOfBirth, String phoneNumber, Enum<TelephoneType> telephoneType) throws Exception {
-//      First we do the validations and then the attribution of the fields
-        System.out.println("Constructor Contact inainte validari");
         inputDataValidation(firstName, lastName, dateOfBirth, phoneNumber, telephoneType);
 
-        System.out.println("Constructor Contact dupa validari");
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
@@ -45,14 +42,20 @@ public class Contact {
     }
 
     private void firstNameValidations(String firstName) throws Exception {
-        if (firstName == null || firstName.length() < 3) {
+        if (firstName == null || firstName.length() < 2) {
             throw new InvalidContactNameException("First name must be at least 2 characters long !");
+        }
+        if (!firstName.matches("^[\\p{L} .'-]+$")) {
+            throw new InvalidContactNameException("First name should only contain letters, spaces and separating characters !");
         }
     }
 
     private void lastNameValidations(String lastName) throws Exception {
-        if (lastName == null || lastName.length() < 3) {
+        if (lastName == null || lastName.length() < 2) {
             throw new InvalidContactNameException("Last name must be at least 2 characters long !");
+        }
+        if (!lastName.matches("^[\\p{L} .'-]+$")) {
+            throw new InvalidContactNameException("Last name should only contain letters, spaces and separating characters !");
         }
     }
 
@@ -143,5 +146,30 @@ public class Contact {
                 dateOfBirth + ". " +
                 telephoneType + " number : " +
                 phoneNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Contact contact = (Contact) o;
+
+        if (!firstName.equals(contact.firstName)) return false;
+        if (!lastName.equals(contact.lastName)) return false;
+        if (!dateOfBirth.equals(contact.dateOfBirth)) return false;
+        if (!phoneNumber.equals(contact.phoneNumber)) return false;
+        return telephoneType.equals(contact.telephoneType);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + dateOfBirth.hashCode();
+        result = 31 * result + phoneNumber.hashCode();
+        result = 31 * result + telephoneType.hashCode();
+        return result;
     }
 }

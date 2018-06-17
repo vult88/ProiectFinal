@@ -28,6 +28,10 @@ public class Ads extends Thread {
         Ads.flagShowAds = flagShowAds;
     }
 
+    public static ImageIcon getSplashScreenImageIcon() {
+        return new ImageIcon(new File(new File("").getAbsolutePath() + adsFilePath + File.separator + "logo" + File.separator + "SplashScreenPicture.jpg").toString());
+    }
+
     private static File[] getBannersPaths() {
         File directory = new File(new File("").getAbsolutePath() + adsFilePath);
         return directory.listFiles(f -> f.getName().toLowerCase().endsWith(".jpg"));

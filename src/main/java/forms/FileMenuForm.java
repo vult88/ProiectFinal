@@ -58,6 +58,10 @@ public class FileMenuForm {
         return registerApp;
     }
 
+    public static JMenuItem getAboutApp() {
+        return aboutApp;
+    }
+
     public static void setEnabledOpenFile(boolean setterEnabled) {
         openFile.setEnabled(setterEnabled);
     }
