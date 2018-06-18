@@ -17,14 +17,22 @@ public class Agenda implements Serializable {
         if (!contacts.add(contact)) {
             throw new DuplicateContactException("Contact already exists in Agenda !");
         }
-        ;
     }
 
     public static void removeContact(Contact contact) {
         contacts.remove(contact);
     }
 
+    public static void removeAllContacts() {
+        contacts.clear();
+    }
+
     public static Set<Contact> getContacts() {
         return contacts;
+    }
+
+    public static void renewContacts(Set<Contact> contactsList) {
+        removeAllContacts();
+        contacts.addAll(contactsList);
     }
 }

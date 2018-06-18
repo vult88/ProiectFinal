@@ -2,12 +2,16 @@ import ads.Ads;
 import com.intellij.uiDesigner.core.GridConstraints;
 import forms.AdsForm;
 import forms.FileMenuForm;
+import interfaces.ThrowConsumer;
 import model.Agenda;
 import model.Contact;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -41,11 +45,7 @@ public class ContactsAgenda {
         contactsListModel = new DefaultListModel<>();
         contactsList.setModel(contactsListModel);
 
-        filterButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
+        filterButton.addActionListener(e -> filterContacts());
         FileMenuForm.getExitApp().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (confirmExitApplication() == JOptionPane.YES_OPTION) {
@@ -66,18 +66,15 @@ public class ContactsAgenda {
                 }
             }
         });
-        FileMenuForm.getAboutApp().addActionListener((e) ->
+        FileMenuForm.getAboutApp().addActionListener(e ->
                 JOptionPane.showConfirmDialog(null, "Student : Hriscanu Andrei Silviu" + "\n" +
                                 "The current application is an agenda book capable " + "\n" +
                                 "of holding names, dates of birth and phone numbers." + "\n" + "\n" +
                                 "Enjoy testing it out !", "About application",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE));
-
-        orderButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
+        FileMenuForm.getOpenFile().addActionListener(e -> openFile());
+        FileMenuForm.getSaveFile().addActionListener(e -> saveFile());
+        orderButton.addActionListener(e -> orderContacts());
         addContactButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ContactWindow contactWindow = new ContactWindow(null, ContactWindow.NEW_CONTACT);
@@ -102,7 +99,7 @@ public class ContactsAgenda {
                 }
             }
         });
-        editContactButton.addActionListener((e) -> modifyContact());
+        editContactButton.addActionListener(e -> modifyContact());
         deleteContactButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Contact contact = contactsList.getSelectedValue();
@@ -129,6 +126,8 @@ public class ContactsAgenda {
         frame.pack();
         frame.setVisible(true);
 
+//      For debugging purposes only
+        Ads.setFlagShowAds(false);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 if (confirmExitApplication() == JOptionPane.YES_OPTION) {
@@ -151,7 +150,8 @@ public class ContactsAgenda {
         }
 
         splashScreen();
-        removeAdsForm();
+
+        removeAdsFormTimeTask();
     }
 
     private static int confirmExitApplication() {
@@ -167,9 +167,9 @@ public class ContactsAgenda {
     }
 
     //    Because it is not possible to call methods of frame from another class that is located in another package, we
-//    have to verify from time to time that the product has been activated. If it was activated, we remove the form
-//    from the frame to make it look more bigger and natural.
-    private static void removeAdsForm() {
+    //    have to verify from time to time that the product has been activated. If it was activated, we remove the form
+    //    from the frame to make it look more bigger and natural.
+    private static void removeAdsFormTimeTask() {
         TimerTask removeAdsForm = new TimerTask() {
             @Override
             public void run() {
@@ -198,5 +198,79 @@ public class ContactsAgenda {
         contactWindow.pack();
         contactWindow.setVisible(true);
         refreshModel();
+    }
+
+    private void saveFile() {
+        JFileChooser fileChooser = createFileChooser();
+        int result = fileChooser.showSaveDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            if (selectedFile.exists()) {
+                if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(null, "Are you sure you want to overwrite " + selectedFile.getAbsolutePath() + "?", "Confirm Save",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) ;
+            }
+            treatFileException(selectedFile, file -> writeToFile(file));
+        }
+    }
+
+    private void openFile() {
+        JFileChooser fileChooser = createFileChooser();
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            treatFileException(selectedFile, file -> readFromFile(selectedFile));
+        }
+    }
+
+    //    Method that implements a Consumer to treat errors from File Open/Save operations.
+//    It's to group them together and reuse code.
+    private void treatFileException(File file, ThrowConsumer fileWork) {
+        try {
+            fileWork.accept(file);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showConfirmDialog(null, "File " + file.getAbsoluteFile() + " not found !", "Error",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showConfirmDialog(null, "Not enough rights over file " + file.getAbsoluteFile(), "Error",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showConfirmDialog(null, "XXXX " + file.getAbsoluteFile(), "Error",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void writeToFile(File selectedFile) throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(selectedFile.getAbsolutePath());
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(Agenda.getContacts());
+        objectOutputStream.close();
+    }
+
+    private void readFromFile(File selectedFile) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(selectedFile.getAbsolutePath());
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        Set<Contact> contactsRead = (Set<Contact>) objectInputStream.readObject();
+        objectInputStream.close();
+//        Populating the agenda
+        Agenda.renewContacts(contactsRead);
+        refreshModel();
+    }
+
+    private JFileChooser createFileChooser() {
+        javax.swing.filechooser.FileFilter fileFilter = new FileNameExtensionFilter("Agenda File", "agenda");
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setFileFilter(fileFilter);
+        return fileChooser;
+    }
+
+    private void orderContacts() {
+
+    }
+
+    private void filterContacts() {
+
     }
 }

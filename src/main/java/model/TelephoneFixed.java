@@ -2,11 +2,13 @@ package model;
 
 import exceptions.InvalidPhoneNumberFormatException;
 
+import java.io.Serializable;
+
 /**
  * Created by Vult on 2018-06-17.
  */
-public class TelephoneFixed extends Telephone {
-    private String phoneNumber;
+
+public class TelephoneFixed extends Telephone implements Serializable {
 
     public TelephoneFixed(String phoneNumber) throws Exception {
         super(phoneNumber);
@@ -28,11 +30,19 @@ public class TelephoneFixed extends Telephone {
 
     @Override
     public int compareTo(Object o) {
-        return Integer.parseInt(this.phoneNumber) - Integer.parseInt(o.toString());
+        return Integer.parseInt(getPhoneNumber()) - Integer.parseInt(o.toString());
     }
 
     @Override
     public String toString() {
-        return "Fixed number " + phoneNumber;
+        return getPhoneNumber();
+    }
+
+    public String getPhoneNumber() {
+        return super.getPhoneNumber();
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        super.setPhoneNumber(phoneNumber);
     }
 }

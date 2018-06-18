@@ -1,9 +1,11 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Created by Vult on 2018-06-17.
  */
-public abstract class Telephone implements Comparable {
+public abstract class Telephone implements Comparable, Serializable {
     private String phoneNumber;
 
     public Telephone(String phoneNumber) throws Exception {
@@ -32,5 +34,13 @@ public abstract class Telephone implements Comparable {
     @Override
     public int compareTo(Object o) {
         return Integer.parseInt(this.phoneNumber) - Integer.parseInt(o.toString());
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

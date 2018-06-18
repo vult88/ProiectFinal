@@ -1,7 +1,6 @@
 import enums.TelephoneType;
 import exceptions.InvalidDateFormatException;
-import model.Agenda;
-import model.Contact;
+import model.*;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -54,11 +53,17 @@ public class ContactWindow extends JDialog {
     private void onOK(Contact contact, int windowOption) {
         try {
             checkValidations();
+            Telephone telephone;
             if (windowOption == NEW_CONTACT) {
+                if (telephoneTypeComboBox.getModel().getSelectedItem() == TelephoneType.Mobile) {
+                    telephone = new TelephoneMobile(telephoneNumberTextField.getText());
+                } else {
+                    telephone = new TelephoneFixed(telephoneNumberTextField.getText());
+                }
                 Contact newContact = new Contact(firstNameTextField.getText(),
                         lastNameTextField.getText(),
                         convertStringToLocalDate(dateOfBirthTextField.getText()),
-                        telephoneNumberTextField.getText(),
+                        telephone,
                         (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
                 Agenda.addContact(newContact);
                 if (newContact.getDateOfBirth().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
@@ -70,8 +75,11 @@ public class ContactWindow extends JDialog {
                 contact.setFirstName(firstNameTextField.getText());
                 contact.setLastName(lastNameTextField.getText());
                 contact.setDateOfBirth(convertStringToLocalDate(dateOfBirthTextField.getText()));
-                contact.setPhoneNumber(telephoneNumberTextField.getText(), (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
                 contact.setTelephoneType((TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
+                Telephone telephoneUpdate = (telephoneTypeComboBox.getModel().getSelectedItem() == TelephoneType.Mobile
+                        ? new TelephoneMobile(telephoneNumberTextField.getText())
+                        : new TelephoneFixed(telephoneNumberTextField.getText()));
+                contact.setTelephoneNumber(telephoneUpdate);
                 if (contact.getDateOfBirth().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
                         contact.getDateOfBirth().getMonth() == LocalDate.now().getMonth()) {
                     JOptionPane.showConfirmDialog(null, "La multi ani " + contact.getFirstName() + " " + contact.getLastName() + " !", "Happy birthday!",
@@ -119,7 +127,7 @@ public class ContactWindow extends JDialog {
         firstNameTextField.setText(contact.getFirstName());
         lastNameTextField.setText(contact.getLastName());
         dateOfBirthTextField.setText(contact.getDateOfBirth().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-        telephoneNumberTextField.setText(contact.getPhoneNumber());
+        telephoneNumberTextField.setText(contact.getTelephoneNumber().toString());
         telephoneTypeComboBox.setSelectedItem(contact.getTelephoneType());
     }
 }
