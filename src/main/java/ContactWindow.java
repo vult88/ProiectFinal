@@ -20,6 +20,7 @@ public class ContactWindow extends JDialog {
     private JTextField telephoneNumberTextField;
     private JTextField dateOfBirthTextField;
     private JComboBox<TelephoneType> telephoneTypeComboBox;
+    private Agenda agenda;
 
     ContactWindow(Contact contact, int windowOption) {
         setContentPane(contentPane);
@@ -65,7 +66,7 @@ public class ContactWindow extends JDialog {
                         convertStringToLocalDate(dateOfBirthTextField.getText()),
                         telephone,
                         (TelephoneType) telephoneTypeComboBox.getModel().getSelectedItem());
-                Agenda.addContact(newContact);
+                agenda.addContact(newContact);
                 if (newContact.getDateOfBirth().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
                         newContact.getDateOfBirth().getMonth() == LocalDate.now().getMonth()) {
                     JOptionPane.showConfirmDialog(null, "La multi ani " + newContact.getFirstName() + " " + newContact.getLastName() + " !", "Happy birthday!",
@@ -118,8 +119,10 @@ public class ContactWindow extends JDialog {
 
     private void setComboBoxModel() {
         DefaultComboBoxModel<TelephoneType> telephoneTypeComboBoxModel = new DefaultComboBoxModel<>();
-        telephoneTypeComboBoxModel.addElement(TelephoneType.Mobile);
-        telephoneTypeComboBoxModel.addElement(TelephoneType.Fixed);
+        for (TelephoneType telephoneType : TelephoneType.values()
+                ) {
+            telephoneTypeComboBoxModel.addElement(telephoneType);
+        }
         telephoneTypeComboBox.setModel(telephoneTypeComboBoxModel);
     }
 
@@ -129,5 +132,9 @@ public class ContactWindow extends JDialog {
         dateOfBirthTextField.setText(contact.getDateOfBirth().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
         telephoneNumberTextField.setText(contact.getTelephoneNumber().toString());
         telephoneTypeComboBox.setSelectedItem(contact.getTelephoneType());
+    }
+
+    void setAgenda(Agenda agenda) {
+        this.agenda = agenda;
     }
 }

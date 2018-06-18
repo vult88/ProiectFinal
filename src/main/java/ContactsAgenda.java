@@ -1,17 +1,16 @@
 import ads.Ads;
 import com.intellij.uiDesigner.core.GridConstraints;
+import enums.FilterCriteria;
+import enums.OrderCriteria;
+import files.FilesHandler;
 import forms.AdsForm;
 import forms.FileMenuForm;
-import interfaces.ThrowConsumer;
 import model.Agenda;
 import model.Contact;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,23 +28,52 @@ public class ContactsAgenda {
     private static DefaultListModel<Contact> contactsListModel;
     private static JFrame frame;
     private JPanel mainPanel;
-    private JButton filterButton;
+    private JComboBox<String> filterComboBox;
     private JTextField customFilterTextField;
-    private JComboBox filterComboBox;
+    private String customFilterText;
     private JButton orderButton;
-    private JComboBox orderComboBox;
+    private JComboBox<String> orderComboBox;
     private JButton addContactButton;
-    private JButton deleteContactButton;
     private JButton editContactButton;
+    private JButton deleteContactButton;
     private JScrollPane contactsScrollPane;
     private JList<Contact> contactsList;
-    private String customFilterText;
+    private JCheckBox orderDescendingCheckBox;
+
+    private Agenda agenda = new Agenda();
 
     private ContactsAgenda() {
         contactsListModel = new DefaultListModel<>();
         contactsList.setModel(contactsListModel);
+        customFilterTextField.setEnabled(false);
 
-        filterButton.addActionListener(e -> filterContacts());
+        setFilterComboBoxModel();
+        filterComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    filterContacts();
+                    customFilterTextField.setText("");
+                    if (filterComboBox.getModel().getSelectedItem().toString().trim().equals(FilterCriteria.enumToText(FilterCriteria.CUSTOM_FILTER).trim())) {
+                        customFilterTextField.setEnabled(true);
+                    } else {
+                        customFilterTextField.setEnabled(false);
+                    }
+                    refreshModel();
+                }
+            }
+        });
+        customFilterTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                customFilterText = customFilterTextField.getText();
+                filterContacts();
+                refreshModel();
+            }
+        });
+        orderButton.addActionListener(e -> orderContacts());
+        setOrderComboBoxModel();
+
         FileMenuForm.getExitApp().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (confirmExitApplication() == JOptionPane.YES_OPTION) {
@@ -70,36 +98,30 @@ public class ContactsAgenda {
                 JOptionPane.showConfirmDialog(null, "Student : Hriscanu Andrei Silviu" + "\n" +
                                 "The current application is an agenda book capable " + "\n" +
                                 "of holding names, dates of birth and phone numbers." + "\n" + "\n" +
-                                "Enjoy testing it out !", "About application",
+                                "Enjoy testing it out !" + "\n" + "\n" +
+                                "Activation key is : activateproduct-1234", "About application",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE));
-        FileMenuForm.getOpenFile().addActionListener(e -> openFile());
-        FileMenuForm.getSaveFile().addActionListener(e -> saveFile());
-        orderButton.addActionListener(e -> orderContacts());
-        addContactButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ContactWindow contactWindow = new ContactWindow(null, ContactWindow.NEW_CONTACT);
-                contactWindow.pack();
-                contactWindow.setVisible(true);
-                refreshModel();
-            }
+        FileMenuForm.getOpenFile().addActionListener(e -> {
+            FilesHandler.setAgenda(agenda);
+            FilesHandler.openFile();
+            refreshModel();
         });
-        customFilterTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                customFilterText = customFilterTextField.getText();
-                refreshModel();
-            }
+        FileMenuForm.getSaveFile().addActionListener(e -> {
+            FilesHandler.setAgenda(agenda);
+            FilesHandler.saveFile();
         });
+
+        addContactButton.addActionListener(e -> contactWindow(null, ContactWindow.NEW_CONTACT));
+        editContactButton.addActionListener(e -> contactWindow(contactsList.getSelectedValue(), ContactWindow.MODIFY_CONTACT));
         contactsList.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 if (e.getClickCount() == 2) {
-                    modifyContact();
+                    contactWindow(contactsList.getSelectedValue(), ContactWindow.MODIFY_CONTACT);
                 }
             }
         });
-        editContactButton.addActionListener(e -> modifyContact());
         deleteContactButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Contact contact = contactsList.getSelectedValue();
@@ -108,7 +130,7 @@ public class ContactsAgenda {
                                 contact.getLastName() + " from the list ?", "Confirm delete",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (dialogOption == JOptionPane.YES_OPTION) {
-                    Agenda.removeContact(contact);
+                    agenda.removeContact(contact);
                     refreshModel();
                 }
             }
@@ -126,8 +148,9 @@ public class ContactsAgenda {
         frame.pack();
         frame.setVisible(true);
 
-//      For debugging purposes only
+// TODO For debugging purposes only - erase when project is finished
         Ads.setFlagShowAds(false);
+
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 if (confirmExitApplication() == JOptionPane.YES_OPTION) {
@@ -186,84 +209,36 @@ public class ContactsAgenda {
 
     private void refreshModel() {
         contactsListModel.clear();
-
-        if (Agenda.getContacts() != null && Agenda.getContacts().size() > 0) {
-            for (Contact contact : Agenda.getContacts()) contactsListModel.addElement(contact);
+        if (agenda.getContacts() != null && agenda.getContacts().size() > 0) {
+//            TODO implement sorting
+            agenda.getContacts().stream().filter(agenda.getFilterCriteria()).forEach(contactsListModel::addElement);
         }
-//        agenda.stream().filter().sorted;
     }
 
-    private void modifyContact() {
-        ContactWindow contactWindow = new ContactWindow(contactsList.getSelectedValue(), ContactWindow.MODIFY_CONTACT);
+    private void contactWindow(Contact contact, int windowType) {
+        ContactWindow contactWindow = new ContactWindow(contact, windowType);
+        contactWindow.setAgenda(agenda);
         contactWindow.pack();
         contactWindow.setVisible(true);
         refreshModel();
     }
 
-    private void saveFile() {
-        JFileChooser fileChooser = createFileChooser();
-        int result = fileChooser.showSaveDialog(null);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            if (selectedFile.exists()) {
-                if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(null, "Are you sure you want to overwrite " + selectedFile.getAbsolutePath() + "?", "Confirm Save",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) ;
-            }
-            treatFileException(selectedFile, file -> writeToFile(file));
+    private void setFilterComboBoxModel() {
+        DefaultComboBoxModel<String> filterCriteriaComboBoxModel = new DefaultComboBoxModel<>();
+        for (FilterCriteria filterCriteria : FilterCriteria.values()
+                ) {
+            filterCriteriaComboBoxModel.addElement(FilterCriteria.enumToText(filterCriteria));
         }
+        filterComboBox.setModel(filterCriteriaComboBoxModel);
     }
 
-    private void openFile() {
-        JFileChooser fileChooser = createFileChooser();
-        int result = fileChooser.showOpenDialog(null);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            treatFileException(selectedFile, file -> readFromFile(selectedFile));
+    private void setOrderComboBoxModel() {
+        DefaultComboBoxModel<String> orderCriteriaComboBoxModel = new DefaultComboBoxModel<>();
+        for (OrderCriteria orderCriteria : OrderCriteria.values()
+                ) {
+            orderCriteriaComboBoxModel.addElement(OrderCriteria.enumToText(orderCriteria));
         }
-    }
-
-    //    Method that implements a Consumer to treat errors from File Open/Save operations.
-//    It's to group them together and reuse code.
-    private void treatFileException(File file, ThrowConsumer fileWork) {
-        try {
-            fileWork.accept(file);
-        } catch (FileNotFoundException e) {
-            JOptionPane.showConfirmDialog(null, "File " + file.getAbsoluteFile() + " not found !", "Error",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-        } catch (IOException e) {
-            JOptionPane.showConfirmDialog(null, "Not enough rights over file " + file.getAbsoluteFile(), "Error",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-        } catch (ClassNotFoundException e) {
-            JOptionPane.showConfirmDialog(null, "XXXX " + file.getAbsoluteFile(), "Error",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void writeToFile(File selectedFile) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(selectedFile.getAbsolutePath());
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(Agenda.getContacts());
-        objectOutputStream.close();
-    }
-
-    private void readFromFile(File selectedFile) throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(selectedFile.getAbsolutePath());
-        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        Set<Contact> contactsRead = (Set<Contact>) objectInputStream.readObject();
-        objectInputStream.close();
-//        Populating the agenda
-        Agenda.renewContacts(contactsRead);
-        refreshModel();
-    }
-
-    private JFileChooser createFileChooser() {
-        javax.swing.filechooser.FileFilter fileFilter = new FileNameExtensionFilter("Agenda File", "agenda");
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setMultiSelectionEnabled(false);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setFileFilter(fileFilter);
-        return fileChooser;
+        orderComboBox.setModel(orderCriteriaComboBoxModel);
     }
 
     private void orderContacts() {
@@ -271,6 +246,29 @@ public class ContactsAgenda {
     }
 
     private void filterContacts() {
-
+        switch (FilterCriteria.fromString(filterComboBox.getModel().getSelectedItem().toString())) {
+            case TELEPHONE_TYPE_MOBILE:
+                agenda.filterOnMobileTelephoneType();
+                break;
+            case TELEPHONE_TYPE_FIXED:
+                agenda.filterOnFixedTelephonType();
+                break;
+            case BORN_CURRENT_MONTH:
+                agenda.filterOnBornThisMonth();
+                break;
+            case BORN_TODAY:
+                agenda.filterOnBornToday();
+                break;
+            case CUSTOM_FILTER:
+                if (customFilterText != null && customFilterText.length() > 0) {
+                    agenda.filterOnCustomFilter(customFilterText);
+                } else {
+                    agenda.filterOnNothing();
+                }
+                break;
+            case SHOW_ALL:
+            default:
+                agenda.filterOnNothing();
+        }
     }
 }

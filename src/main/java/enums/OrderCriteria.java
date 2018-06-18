@@ -5,8 +5,22 @@ package enums;
  * Enums for ordering in the window
  */
 public enum OrderCriteria {
-    BY_NAME,
-    BY_SURNAME,
-    BY_DATE_OF_BIRTH,
-    BY_TELEPHONE_NUMBER
+    ORDER_BY_FIRSTNAME("First name"),
+    ORDER_BY_LASTNAME("Last name"),
+    ORDER_BY_DATE_OF_BIRTH("Date of birth"),
+    ORDER_BY_TELEPHONE_NUMBER("Telephone number");
+
+    private String message;
+
+    OrderCriteria(String message) {
+        this.message = message;
+    }
+
+    public static String enumToText(OrderCriteria orderCriteria) {
+        return orderCriteria.getMessage();
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
