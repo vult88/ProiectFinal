@@ -21,7 +21,6 @@ import static constants.ActivationKey.verifyActivationKey;
  * Created by Vult on 01-Jun-18.
  * The main body... the soul... the mind...
  */
-// TODO Replace all listeners with Lambda functions
 public class ContactsAgenda {
     private static FileMenuForm fileMenuForm = new FileMenuForm();
     private static AdsForm adsForm = new AdsForm();
@@ -49,6 +48,9 @@ public class ContactsAgenda {
         customFilterTextField.setEnabled(false);
 
         setFilterComboBoxModel();
+        setOrderComboBoxModel();
+        orderContacts();
+
         filterComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -56,7 +58,7 @@ public class ContactsAgenda {
                     filterContacts();
                     customFilterTextField.setText("");
                     customFilterText = "";
-                    if (filterComboBox.getModel().getSelectedItem().toString().trim().equals(FilterCriteria.enumToText(FilterCriteria.CUSTOM_FILTER).trim())) {
+                    if (FilterCriteria.fromString(filterComboBox.getModel().getSelectedItem().toString()) == FilterCriteria.CUSTOM_FILTER) {
                         customFilterTextField.setEnabled(true);
                     } else {
                         customFilterTextField.setEnabled(false);
@@ -73,9 +75,18 @@ public class ContactsAgenda {
                 refreshModel();
             }
         });
-        orderButton.addActionListener(e -> orderContacts());
-        setOrderComboBoxModel();
-        orderContacts();
+        orderComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                orderContacts();
+            }
+        });
+        orderDescendingCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                orderContacts();
+            }
+        });
 
         FileMenuForm.getExitApp().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -112,6 +123,7 @@ public class ContactsAgenda {
         FileMenuForm.getSaveFile().addActionListener(e -> {
             FilesHandler.setAgenda(agenda);
             FilesHandler.saveFile();
+            startAutoSaving();
         });
 
         addContactButton.addActionListener(e -> contactWindow(null, ContactWindow.NEW_CONTACT));
@@ -151,7 +163,7 @@ public class ContactsAgenda {
         frame = new JFrame("Contacts Agenda");
         frame.setContentPane(new ContactsAgenda().mainPanel);
         frame.setJMenuBar(FileMenuForm.getMenuBar());
-        frame.add(adsForm, new GridConstraints(4, 0, 1, 5, 0, 3, 1, 4, new Dimension(-1, 100), new Dimension(-1, 100), new Dimension(-1, 100)));
+        frame.add(adsForm, new GridConstraints(4, 0, 1, 4, 0, 3, 1, 4, new Dimension(-1, 100), new Dimension(-1, 100), new Dimension(-1, 100)));
         frame.setLocation(200, 200);
         frame.pack();
         frame.setVisible(true);
@@ -181,7 +193,6 @@ public class ContactsAgenda {
         }
 
         splashScreen();
-
         removeAdsFormTimeTask();
     }
 
@@ -218,11 +229,19 @@ public class ContactsAgenda {
     private void refreshModel() {
         contactsListModel.clear();
         if (agenda.getContacts() != null && agenda.getContacts().size() > 0) {
-            agenda.getContacts()
-                    .stream()
-                    .filter(agenda.getFilterCriteria())
-                    .sorted(agenda.getComparator(orderCriteria))
-                    .forEach(contactsListModel::addElement);
+            if (orderDescendingCheckBox.isSelected()) {
+                agenda.getContacts()
+                        .stream()
+                        .filter(agenda.getFilterCriteria())
+                        .sorted(agenda.setAndGetCriteriaToComparator(orderCriteria).reversed())
+                        .forEach(contactsListModel::addElement);
+            } else {
+                agenda.getContacts()
+                        .stream()
+                        .filter(agenda.getFilterCriteria())
+                        .sorted(agenda.setAndGetCriteriaToComparator(orderCriteria))
+                        .forEach(contactsListModel::addElement);
+            }
         }
     }
 
@@ -259,20 +278,21 @@ public class ContactsAgenda {
 
     private void orderContacts() {
         orderCriteria = OrderCriteria.fromString(orderComboBox.getModel().getSelectedItem().toString());
+        refreshModel();
     }
 
     private void filterContacts() {
         switch (FilterCriteria.fromString(filterComboBox.getModel().getSelectedItem().toString())) {
-            case TELEPHONE_TYPE_MOBILE:
+            case SHOW_TELEPHONE_TYPE_MOBILE:
                 agenda.filterOnMobileTelephoneType();
                 break;
-            case TELEPHONE_TYPE_FIXED:
+            case SHOW_TELEPHONE_TYPE_FIXED:
                 agenda.filterOnFixedTelephoneType();
                 break;
-            case BORN_CURRENT_MONTH:
+            case SHOW_BORN_CURRENT_MONTH:
                 agenda.filterOnBornThisMonth();
                 break;
-            case BORN_TODAY:
+            case SHOW_BORN_TODAY:
                 agenda.filterOnBornToday();
                 break;
             case CUSTOM_FILTER:
@@ -286,5 +306,17 @@ public class ContactsAgenda {
             default:
                 agenda.filterOnNothing();
         }
+    }
+
+    private void startAutoSaving() {
+        TimerTask autoSaving = new TimerTask() {
+            @Override
+            public void run() {
+                FilesHandler.autoSave(agenda);
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(autoSaving, 60000, 60000);
+
     }
 }

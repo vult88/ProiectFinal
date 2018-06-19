@@ -84,4 +84,9 @@ public class FilesHandler extends JFileChooser {
     public static void setAgenda(Agenda agenda) {
         FilesHandler.agenda = agenda;
     }
+
+    public static void autoSave(Agenda agenda) {
+        setAgenda(agenda);
+        treatFileException(selectedFile, file -> writeToFile(selectedFile));
+    }
 }

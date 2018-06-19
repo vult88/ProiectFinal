@@ -19,6 +19,7 @@ public class Agenda implements Serializable {
     private Set<Contact> contacts = new HashSet<>();
 
     private Map<OrderCriteria, Comparator> criteriaToComparator = new HashMap<>();
+    private Comparator<Contact> criteriaComparator;
     private Predicate<Contact> filterCriteria = contact -> true;
 
 
@@ -82,11 +83,7 @@ public class Agenda implements Serializable {
         return filterCriteria;
     }
 
-    public Map<OrderCriteria, Comparator> getCriteriaToComparator() {
-        return criteriaToComparator;
-    }
-
-    public Comparator<Contact> getComparator(OrderCriteria key) {
-        return criteriaToComparator.get(key);
+    public Comparator<Contact> setAndGetCriteriaToComparator(OrderCriteria orderCriteria) {
+        return criteriaComparator = criteriaToComparator.getOrDefault(orderCriteria, Comparator.comparing(Contact::getFirstName));
     }
 }

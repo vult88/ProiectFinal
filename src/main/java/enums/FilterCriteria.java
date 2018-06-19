@@ -6,10 +6,10 @@ package enums;
  */
 public enum FilterCriteria {
     SHOW_ALL("Show all contacts"),
-    BORN_TODAY("Born today"),
-    BORN_CURRENT_MONTH("Born this month"),
-    TELEPHONE_TYPE_MOBILE("Has a mobile phone number"),
-    TELEPHONE_TYPE_FIXED("Has a fixed phone number"),
+    SHOW_BORN_TODAY("Born today"),
+    SHOW_BORN_CURRENT_MONTH("Born this month"),
+    SHOW_TELEPHONE_TYPE_MOBILE("Has a mobile phone number"),
+    SHOW_TELEPHONE_TYPE_FIXED("Has a fixed phone number"),
     CUSTOM_FILTER("Custom filter");
 
     private String message;

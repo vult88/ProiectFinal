@@ -7,6 +7,8 @@
     </constraints>
     <properties>
       <autoscrolls value="true"/>
+      <verifyInputWhenFocusTarget value="true"/>
+      <visible value="true"/>
     </properties>
     <border type="none"/>
     <children>
