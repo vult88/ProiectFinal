@@ -168,9 +168,6 @@ public class ContactsAgenda {
         frame.pack();
         frame.setVisible(true);
 
-// TODO For debugging purposes only - erase when project is finished
-        Ads.setFlagShowAds(false);
-
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 if (confirmExitApplication() == JOptionPane.YES_OPTION) {
@@ -317,6 +314,5 @@ public class ContactsAgenda {
         };
         Timer timer = new Timer();
         timer.schedule(autoSaving, 60000, 60000);
-
     }
 }
