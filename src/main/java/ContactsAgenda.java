@@ -39,6 +39,7 @@ public class ContactsAgenda {
     private JScrollPane contactsScrollPane;
     private JList<Contact> contactsList;
     private JCheckBox orderDescendingCheckBox;
+    private OrderCriteria orderCriteria;
 
     private Agenda agenda = new Agenda();
 
@@ -54,6 +55,7 @@ public class ContactsAgenda {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     filterContacts();
                     customFilterTextField.setText("");
+                    customFilterText = "";
                     if (filterComboBox.getModel().getSelectedItem().toString().trim().equals(FilterCriteria.enumToText(FilterCriteria.CUSTOM_FILTER).trim())) {
                         customFilterTextField.setEnabled(true);
                     } else {
@@ -73,6 +75,7 @@ public class ContactsAgenda {
         });
         orderButton.addActionListener(e -> orderContacts());
         setOrderComboBoxModel();
+        orderContacts();
 
         FileMenuForm.getExitApp().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -125,13 +128,18 @@ public class ContactsAgenda {
         deleteContactButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Contact contact = contactsList.getSelectedValue();
-                int dialogOption = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove " +
-                                contact.getFirstName() + " " +
-                                contact.getLastName() + " from the list ?", "Confirm delete",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (dialogOption == JOptionPane.YES_OPTION) {
-                    agenda.removeContact(contact);
-                    refreshModel();
+                if (contact == null) {
+                    JOptionPane.showConfirmDialog(null, "Please select a contact from the list !", "Invalid selection",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+                } else {
+                    int dialogOption = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove " +
+                                    contact.getFirstName() + " " +
+                                    contact.getLastName() + " from the list ?", "Confirm delete",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if (dialogOption == JOptionPane.YES_OPTION) {
+                        agenda.removeContact(contact);
+                        refreshModel();
+                    }
                 }
             }
         });
@@ -210,17 +218,25 @@ public class ContactsAgenda {
     private void refreshModel() {
         contactsListModel.clear();
         if (agenda.getContacts() != null && agenda.getContacts().size() > 0) {
-//            TODO implement sorting
-            agenda.getContacts().stream().filter(agenda.getFilterCriteria()).forEach(contactsListModel::addElement);
+            agenda.getContacts()
+                    .stream()
+                    .filter(agenda.getFilterCriteria())
+                    .sorted(agenda.getComparator(orderCriteria))
+                    .forEach(contactsListModel::addElement);
         }
     }
 
     private void contactWindow(Contact contact, int windowType) {
-        ContactWindow contactWindow = new ContactWindow(contact, windowType);
-        contactWindow.setAgenda(agenda);
-        contactWindow.pack();
-        contactWindow.setVisible(true);
-        refreshModel();
+        if (windowType == ContactWindow.MODIFY_CONTACT && contact == null) {
+            JOptionPane.showConfirmDialog(null, "Please select a contact from the list !", "Invalid selection",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+        } else {
+            ContactWindow contactWindow = new ContactWindow(contact, windowType);
+            contactWindow.setAgenda(agenda);
+            contactWindow.pack();
+            contactWindow.setVisible(true);
+            refreshModel();
+        }
     }
 
     private void setFilterComboBoxModel() {
@@ -242,7 +258,7 @@ public class ContactsAgenda {
     }
 
     private void orderContacts() {
-
+        orderCriteria = OrderCriteria.fromString(orderComboBox.getModel().getSelectedItem().toString());
     }
 
     private void filterContacts() {
@@ -251,7 +267,7 @@ public class ContactsAgenda {
                 agenda.filterOnMobileTelephoneType();
                 break;
             case TELEPHONE_TYPE_FIXED:
-                agenda.filterOnFixedTelephonType();
+                agenda.filterOnFixedTelephoneType();
                 break;
             case BORN_CURRENT_MONTH:
                 agenda.filterOnBornThisMonth();

@@ -20,6 +20,15 @@ public enum OrderCriteria {
         return orderCriteria.getMessage();
     }
 
+    public static OrderCriteria fromString(String message) {
+        for (OrderCriteria orderCriteria : OrderCriteria.values()) {
+            if (orderCriteria.message.equalsIgnoreCase(message)) {
+                return orderCriteria;
+            }
+        }
+        return ORDER_BY_FIRSTNAME;
+    }
+
     public String getMessage() {
         return message;
     }
