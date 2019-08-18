@@ -1,20 +1,16 @@
 package files;
 
 import interfaces.ThrowConsumer;
-import model.Agenda;
-import model.Contact;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
-import java.util.Set;
 
 /**
  * Created by Vult on 2018-06-18.
  */
 public class FilesHandler extends JFileChooser {
     private static File selectedFile;
-    private static Agenda agenda;
 
     public static void saveFile() {
         JFileChooser fileChooser = createFileChooser();
@@ -58,17 +54,17 @@ public class FilesHandler extends JFileChooser {
     private static void writeToFile(File selectedFile) throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(selectedFile.getAbsolutePath());
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(agenda.getContacts());
+//        objectOutputStream.writeObject(agenda.getContacts());
         objectOutputStream.close();
     }
 
     private static void readFromFile(File selectedFile) throws IOException, ClassNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(selectedFile.getAbsolutePath());
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-        Set<Contact> contactsRead = (Set<Contact>) objectInputStream.readObject();
+//        Set<Contact> contactsRead = (Set<Contact>) objectInputStream.readObject();
         objectInputStream.close();
 //        Populating the agenda
-        agenda.renewContacts(contactsRead);
+//        agenda.renewContacts(contactsRead);
     }
 
     private static JFileChooser createFileChooser() {
@@ -80,13 +76,13 @@ public class FilesHandler extends JFileChooser {
         fileChooser.setFileFilter(fileFilter);
         return fileChooser;
     }
-
-    public static void setAgenda(Agenda agenda) {
-        FilesHandler.agenda = agenda;
-    }
-
-    public static void autoSave(Agenda agenda) {
-        setAgenda(agenda);
-        treatFileException(selectedFile, file -> writeToFile(selectedFile));
-    }
+//
+//    public static void setAgenda(Agenda agenda) {
+//        FilesHandler.agenda = agenda;
+//    }
+//
+//    public static void autoSave(Agenda agenda) {
+//        setAgenda(agenda);
+//        treatFileException(selectedFile, file -> writeToFile(selectedFile));
+//    }
 }
