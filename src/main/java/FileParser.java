@@ -84,11 +84,6 @@ public class FileParser extends JDialog {
         });
     }
 
-    private static int confirmExitApplication() {
-        return JOptionPane.showConfirmDialog(null, "Are you sure you want to exit ?", "Exit",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-    }
-
     public static void main(String[] args) {
         frame = new JFrame("File parser");
         frame.setContentPane(new FileParser().contentPane);
@@ -104,6 +99,11 @@ public class FileParser extends JDialog {
                 }
             }
         });
+    }
+
+    private static int confirmExitApplication() {
+        return JOptionPane.showConfirmDialog(null, "Are you sure you want to exit ?", "Exit",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
     }
 
     private static void refreshModel() {
