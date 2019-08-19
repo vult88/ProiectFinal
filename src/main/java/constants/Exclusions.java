@@ -24,24 +24,25 @@ public class Exclusions {
         return exclusionListAsArray;
     }
 
-    public void addExclusionList(ExclusionDefinition exclusionList) {
+    public String[][] addExclusionToList(ExclusionDefinition exclusionList) {
         this.exclusionList.add(
                 new ExclusionDefinition(
                         formatNumericDigits(5, exclusionList.getEtab()),
                         formatNumericDigits(5, exclusionList.getAgence())
                 )
         );
+        return getExclusionListAsArray();
     }
 
-    public void removeAllExclusionList(ExclusionDefinition exclusionList) {
-        while (this.exclusionList.contains(exclusionList)) {
-            this.exclusionList.remove(exclusionList);
-        }
+    public String[][] removeExclusionFromList(ExclusionDefinition exclusionDefinition) {
+        exclusionList.remove(exclusionDefinition);
+        return getExclusionListAsArray();
     }
 
     public void initializeExclusionList() {
         this.exclusionList.clear();
         this.exclusionList.add(new ExclusionDefinition("99999", ""));
+        this.exclusionList.add(new ExclusionDefinition("99999", "00000"));
         this.exclusionList.add(new ExclusionDefinition("30003", "99999"));
         this.exclusionList.add(new ExclusionDefinition("30076", "02759"));
         this.exclusionList.add(new ExclusionDefinition("10268", "02019"));

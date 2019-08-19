@@ -35,8 +35,6 @@ public class ExclusionDefinition {
 
         ExclusionDefinition that = (ExclusionDefinition) o;
 
-        if (that.Etab.equals("99999") && Agence.equals(that.Agence)) return true;
-        if (Etab.equals(that.Etab) && that.Agence.equals("99999")) return true;
         if (Etab != null ? !Etab.equals(that.Etab) : that.Etab != null) return false;
         return Agence != null ? Agence.equals(that.Agence) : that.Agence == null;
 

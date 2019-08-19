@@ -5,7 +5,10 @@ import model.FileDefinition;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -80,17 +83,6 @@ public class FilesHandler extends JFileChooser {
             count++;
         }
         fileWriter.close();
-        JOptionPane.showConfirmDialog(null, "File " + selectedFile.getAbsoluteFile() + " successfully written !", "Information",
-                JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private static void readFromFile(File selectedFile) throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(selectedFile.getAbsolutePath());
-        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-//        Set<Contact> contactsRead = (Set<Contact>) objectInputStream.readObject();
-        objectInputStream.close();
-//        Populating the agenda
-//        agenda.renewContacts(contactsRead);
     }
 
     private static JFileChooser createFileChooser() {
@@ -101,13 +93,4 @@ public class FilesHandler extends JFileChooser {
         fileChooser.setFileFilter(fileFilter);
         return fileChooser;
     }
-//
-//    public static void setAgenda(Agenda agenda) {
-//        FilesHandler.agenda = agenda;
-//    }
-//
-//    public static void autoSave(Agenda agenda) {
-//        setAgenda(agenda);
-//        treatFileException(selectedFile, file -> writeToFile(selectedFile));
-//    }
 }

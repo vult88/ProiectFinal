@@ -1,5 +1,6 @@
 package files;
 
+import model.ExclusionDefinition;
 import model.FileDefinition;
 import model.FileDefinitionColumns;
 
@@ -12,6 +13,7 @@ import static model.FileDefinitionColumns.*;
 public class ReadTabDelimited {
 
     public static LinkedList<FileDefinition> fileDefinitions = new LinkedList<>();
+    private static boolean isOtherElementsToErase;
 
     public static void readTabDelimitedFile(File file) throws IllegalArgumentException {
         try {
@@ -89,5 +91,36 @@ public class ReadTabDelimited {
             sum = sum + Long.parseLong(arg);
         }
         return formatNumericDigits(11, Long.toString(sum));
+    }
+
+    public static void removeAllFileDefinitionByExclusionList(LinkedList<ExclusionDefinition> exclusionList) throws ArrayIndexOutOfBoundsException {
+
+        for (ExclusionDefinition exclusionDefinition : exclusionList) {
+            FileDefinition fileDefinition = new FileDefinition("", exclusionDefinition.getEtab(), exclusionDefinition.getAgence(), "", "", "");
+            do {
+                int index = 0;
+                isOtherElementsToErase = false;
+                // Building the Array for each definition of the exclusion list so we always have the correct index of the found element
+                FileDefinition[] fileDefinitionArray = new FileDefinition[fileDefinitions.size()];
+                int i = 0;
+                for (FileDefinition fileDefinition1 : fileDefinitions) {
+                    fileDefinitionArray[i] = fileDefinition1;
+                    i++;
+                }
+                // We parse the array until we find the first line to remove
+                for (int j = 0; j < fileDefinitions.size(); j++) {
+                    if ((fileDefinition.getColumnEtab().equals("99999") && fileDefinition.getColumnAgence().equals(fileDefinitionArray[j].getColumnAgence()))
+                            || (fileDefinition.getColumnEtab().equals(fileDefinitionArray[j].getColumnEtab()) && fileDefinition.getColumnAgence().equals("99999"))) {
+                        index = j;
+                        isOtherElementsToErase = true;
+                        // Force loop exit
+                        break;
+                    }
+                }
+                if (isOtherElementsToErase) {
+                    fileDefinitions.remove(index);
+                }
+            } while (isOtherElementsToErase);
+        }
     }
 }
