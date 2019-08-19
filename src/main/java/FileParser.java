@@ -31,7 +31,6 @@ public class FileParser extends JDialog {
     private String sourceFilePath;
 
     private FileParser() {
-        setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
         defaultTableModel.setColumnIdentifiers(header);
