@@ -1,22 +1,52 @@
+import constants.Exclusions;
+import files.FilesHandler;
+import model.ExclusionDefinition;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Vector;
 
 public class FileParser extends JDialog {
+    private static final String[] header = {"Banque", "Agence"};
     private static JFrame frame;
+    private static Exclusions exclusions = new Exclusions();
+    private static DefaultTableModel defaultTableModel = new DefaultTableModel(0, 0);
     private JPanel contentPane;
     private JTextField textSourceFile;
     private JButton openButton;
     private JTable tableAgencyBank;
     private JButton saveFileButton;
+    private JButton excludeDataFromTableButton;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JPanel mainPanel;
+    private String sourceFilePath;
 
-    public FileParser() {
+    private FileParser() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+        defaultTableModel.setColumnIdentifiers(header);
+        tableAgencyBank.setModel(defaultTableModel);
+
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sourceFilePath = FilesHandler.openFile().toString();
+                textSourceFile.setText(sourceFilePath);
+                refreshModel();
+            }
+        });
+        saveFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FilesHandler.saveFile();
+            }
+        });
     }
 
     private static int confirmExitApplication() {
@@ -39,5 +69,19 @@ public class FileParser extends JDialog {
                 }
             }
         });
+    }
+
+    private static void refreshModel() {
+
+        if (exclusions != null && exclusions.getExclusionList().isEmpty()) {
+            exclusions.initializeExclusionList();
+        }
+
+        for (ExclusionDefinition exclusionDefinition : exclusions.getExclusionList()) {
+            Vector<Object> data = new Vector<Object>();
+            data.add(exclusionDefinition.getEtab().equals("99999") ? "ALL" : exclusionDefinition.getEtab());
+            data.add(exclusionDefinition.getAgence().equals("99999") ? "ALL" : exclusionDefinition.getAgence());
+            defaultTableModel.addRow(data);
+        }
     }
 }
