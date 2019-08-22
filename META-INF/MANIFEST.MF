@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Class-Path: ParsareTabDelimitedText\target\classes
+Class-Path: ParsareTabDelimitedText\target\classes ParsareTabDelimitedText\lib\intellij_forms_rt.jar\com\intellij\uiDesigner\core\
 Main-Class: FileParser
 

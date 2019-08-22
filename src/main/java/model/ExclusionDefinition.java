@@ -1,7 +1,8 @@
 package model;
 
 /**
- * Created by Vult on 2019-08-19.
+ * Created by Vult on 2019-08-19 .
+ *
  */
 public class ExclusionDefinition {
     private String Etab;

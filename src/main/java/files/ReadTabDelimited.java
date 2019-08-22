@@ -2,7 +2,6 @@ package files;
 
 import model.ExclusionDefinition;
 import model.FileDefinition;
-import model.FileDefinitionColumns;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -12,10 +11,9 @@ import static model.FileDefinitionColumns.*;
 
 public class ReadTabDelimited {
 
-    public static LinkedList<FileDefinition> fileDefinitions = new LinkedList<>();
-    private static boolean isOtherElementsToErase;
+    static LinkedList<FileDefinition> fileDefinitions = new LinkedList<>();
 
-    public static void readTabDelimitedFile(File file) throws IllegalArgumentException {
+    static void readTabDelimitedFile(File file) throws IllegalArgumentException {
         try {
             Scanner scan = new Scanner(file);
 
@@ -26,7 +24,6 @@ public class ReadTabDelimited {
                 if (!splitted[0].trim().equalsIgnoreCase("tit")) {
                     throw new IllegalArgumentException("No header found in source file !");
                 }
-                FileDefinitionColumns fileDefinitionColumns = new FileDefinitionColumns();
                 for (int i = 0; i < splitted.length; i++) {
                     switch (splitted[i].trim().toLowerCase()) {
                         case "tit":
@@ -97,6 +94,7 @@ public class ReadTabDelimited {
 
         for (ExclusionDefinition exclusionDefinition : exclusionList) {
             FileDefinition fileDefinition = new FileDefinition("", exclusionDefinition.getEtab(), exclusionDefinition.getAgence(), "", "", "");
+            boolean isOtherElementsToErase;
             do {
                 int index = 0;
                 isOtherElementsToErase = false;

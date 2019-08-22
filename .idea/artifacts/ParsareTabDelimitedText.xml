@@ -1,0 +1,33 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" build-on-make="true" name="ParsareTabDelimitedText">
+    <output-path>$PROJECT_DIR$/out/artifacts/ParsareTabDelimitedText</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="FileParser" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="exe" />
+        <option name="title" value="FileParser" />
+        <option name="vendor" value="" />
+        <option name="version" value="1.0.0" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="ParsingTabDelimited.jar">
+        <element id="module-output" name="ParsingTabDelimited" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="dir-copy" path="$PROJECT_DIR$/target" />
+        <element id="library" level="project" name="Maven: com.intellij:forms_rt:7.0.3" />
+        <element id="library" level="project" name="Maven: jdom:jdom:1.0" />
+        <element id="library" level="project" name="Maven: asm:asm-tree:3.0" />
+        <element id="library" level="project" name="Maven: asm:asm:3.0" />
+        <element id="library" level="project" name="Maven: asm:asm-commons:3.0" />
+        <element id="library" level="project" name="Maven: com.jgoodies:forms:1.1-preview" />
+      </element>
+      <element id="module-output" name="ParsingTabDelimited" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/intellij_forms_rt.jar" />
+    </root>
+  </artifact>
+</component>

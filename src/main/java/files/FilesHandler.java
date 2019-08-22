@@ -16,6 +16,7 @@ import static files.ReadTabDelimited.fileDefinitions;
 
 /**
  * Created by Vult on 2018-06-18.
+ *
  */
 public class FilesHandler extends JFileChooser {
     private static File selectedFile;

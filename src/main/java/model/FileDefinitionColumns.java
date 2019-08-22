@@ -2,6 +2,7 @@ package model;
 
 /**
  * Created by Vult on 2019-08-17.
+ *
  */
 public class FileDefinitionColumns {
     private static int positionColumnTit;

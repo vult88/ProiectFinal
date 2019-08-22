@@ -13,7 +13,7 @@ public class Exclusions {
         return exclusionList;
     }
 
-    public String[][] getExclusionListAsArray() {
+    private String[][] getExclusionListAsArray() {
         int i = 0;
         String[][] exclusionListAsArray = new String[exclusionList.size()][2];
         for (ExclusionDefinition exclusionDefinition : exclusionList) {
@@ -25,16 +25,28 @@ public class Exclusions {
     }
 
     public String[][] addExclusionToList(ExclusionDefinition exclusionList) {
+        if (exclusionList.getEtab().trim().equalsIgnoreCase("all")) {
+            exclusionList.setEtab("99999");
+        }
+        if (exclusionList.getAgence().trim().equalsIgnoreCase("all")) {
+            exclusionList.setAgence("99999");
+        }
         this.exclusionList.add(
                 new ExclusionDefinition(
-                        formatNumericDigits(5, exclusionList.getEtab()),
-                        formatNumericDigits(5, exclusionList.getAgence())
+                        !exclusionList.getEtab().isEmpty() ? formatNumericDigits(5, exclusionList.getEtab()) : exclusionList.getEtab(),
+                        !exclusionList.getAgence().isEmpty() ? formatNumericDigits(5, exclusionList.getAgence()) : exclusionList.getAgence()
                 )
         );
         return getExclusionListAsArray();
     }
 
     public String[][] removeExclusionFromList(ExclusionDefinition exclusionDefinition) {
+        if (exclusionDefinition.getEtab().trim().equalsIgnoreCase("all")) {
+            exclusionDefinition.setEtab("99999");
+        }
+        if (exclusionDefinition.getAgence().trim().equalsIgnoreCase("all")) {
+            exclusionDefinition.setAgence("99999");
+        }
         exclusionList.remove(exclusionDefinition);
         return getExclusionListAsArray();
     }
