@@ -29,10 +29,10 @@ public class ReadTabDelimited {
                         case "tit":
                             setPositionColumnTit(i);
                             break;
-                        case "etablissement":
+                        case "etablissements":
                             setPositionColumnEtab(i);
                             break;
-                        case "agence":
+                        case "agences":
                             setPositionColumnAgence(i);
                             break;
                         case "fccd":
@@ -58,15 +58,15 @@ public class ReadTabDelimited {
                 String curLine = scan.nextLine();
                 String[] splitted = curLine.split("\t");
 
-                fileDefinitions.add(new FileDefinition(
-                        splitted[getPositionColumnTit()],
-                        formatNumericDigits(5, splitted[getPositionColumnEtab()]),
-                        formatNumericDigits(5, splitted[getPositionColumnAgence()]),
-                        formatNumericDigits(11, splitted[getPositionColumnFCCD()]),
-                        formatNumericDigits(11, splitted[getPositionColumnFCCG()]),
-                        sumTotal(formatNumericDigits(11, splitted[getPositionColumnFCCD()]),
-                                formatNumericDigits(11, splitted[getPositionColumnFCCG()]))
-                ));
+                FileDefinition row = new FileDefinition();
+                row.setColumnTit(splitted.length > getPositionColumnTit() ? splitted[getPositionColumnTit()] : "   ");
+                row.setColumnEtab(splitted.length > getPositionColumnEtab() ? formatNumericDigits(5, splitted[getPositionColumnEtab()]) : formatNumericDigits(5, "0"));
+                row.setColumnAgence(splitted.length > getPositionColumnAgence() ? formatNumericDigits(5, splitted[getPositionColumnAgence()]) : formatNumericDigits(5, "0"));
+                row.setColumnFCCD(splitted.length > getPositionColumnFCCD() ? formatNumericDigits(11, splitted[getPositionColumnFCCD()]) : formatNumericDigits(11, "0"));
+                row.setColumnFCCG(splitted.length > getPositionColumnFCCG() ? formatNumericDigits(11, splitted[getPositionColumnFCCG()]) : formatNumericDigits(11, "0"));
+                row.setColumnTotal(sumTotal(row.getColumnFCCD(), row.getColumnFCCG()));
+
+                fileDefinitions.add(row);
             }
             scan.close();
         } catch (Exception e) {

@@ -21,8 +21,9 @@ import static files.ReadTabDelimited.fileDefinitions;
 public class FilesHandler extends JFileChooser {
     private static File selectedFile;
 
-    public static void saveFile() {
+    public static void saveFile(Path sourceFileName) {
         JFileChooser fileChooser = createFileChooser();
+        fileChooser.setSelectedFile(new File(sourceFileName.toString()));
         int result = fileChooser.showSaveDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();

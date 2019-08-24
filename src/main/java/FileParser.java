@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.file.Path;
 import java.util.Vector;
 
 import static files.ReadTabDelimited.removeAllFileDefinitionByExclusionList;
@@ -31,7 +32,7 @@ public class FileParser extends JDialog {
     private JTextField textFieldAgency;
     private JButton removeButton;
     private JButton addButton;
-    private String sourceFilePath;
+    private Path sourceFilePath;
 
     private FileParser() {
         $$$setupUI$$$();
@@ -40,21 +41,21 @@ public class FileParser extends JDialog {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sourceFilePath = FilesHandler.openFile().toString();
-                textSourceFile.setText(sourceFilePath);
+                sourceFilePath = FilesHandler.openFile();
+                textSourceFile.setText(sourceFilePath.toString());
                 refreshModel();
             }
         });
         saveFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FilesHandler.saveFile();
+                FilesHandler.saveFile(sourceFilePath);
             }
         });
         excludeDataFromTableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (sourceFilePath != null && !sourceFilePath.isEmpty()) {
+                if (sourceFilePath != null && !sourceFilePath.toString().isEmpty()) {
                     removeAllFileDefinitionByExclusionList(exclusions.getExclusionList());
                     JOptionPane.showConfirmDialog(null, "Lines were excluded from source file.\nPlease save the result via the Save button!", "Execution complete",
                             JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);

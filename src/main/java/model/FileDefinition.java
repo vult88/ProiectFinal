@@ -24,28 +24,55 @@ public class FileDefinition implements Serializable {
         ColumnTotal = columnTotal;
     }
 
+    public FileDefinition() {
+    }
+
     private String getColumnTit() {
         return ColumnTit;
+    }
+
+    public void setColumnTit(String columnTit) {
+        ColumnTit = columnTit;
     }
 
     public String getColumnEtab() {
         return ColumnEtab;
     }
 
+    public void setColumnEtab(String columnEtab) {
+        ColumnEtab = columnEtab;
+    }
+
     public String getColumnAgence() {
         return ColumnAgence;
     }
 
-    private String getColumnFCCD() {
+    public void setColumnAgence(String columnAgence) {
+        ColumnAgence = columnAgence;
+    }
+
+    public String getColumnFCCD() {
         return ColumnFCCD;
     }
 
-    private String getColumnFCCG() {
+    public void setColumnFCCD(String columnFCCD) {
+        ColumnFCCD = columnFCCD;
+    }
+
+    public String getColumnFCCG() {
         return ColumnFCCG;
     }
 
-    private String getColumnTotal() {
+    public void setColumnFCCG(String columnFCCG) {
+        ColumnFCCG = columnFCCG;
+    }
+
+    public String getColumnTotal() {
         return ColumnTotal;
+    }
+
+    public void setColumnTotal(String columnTotal) {
+        ColumnTotal = columnTotal;
     }
 
     public String toStringNewLine() {
