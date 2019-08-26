@@ -96,6 +96,7 @@
                             <Class-Path>.</Class-Path>
                         </manifestEntries>
                     </archive>
+                    <outputDirectory>../src/main/resources/</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>

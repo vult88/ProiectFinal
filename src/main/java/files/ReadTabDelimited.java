@@ -11,6 +11,7 @@ import static model.FileDefinitionColumns.*;
 
 public class ReadTabDelimited {
 
+    private static final String delimiter = ";";
     static LinkedList<FileDefinition> fileDefinitions = new LinkedList<>();
 
     static void readTabDelimitedFile(File file) throws IllegalArgumentException {
@@ -20,7 +21,7 @@ public class ReadTabDelimited {
             // Header read
             if (scan.hasNext()) {
                 String curLine = scan.nextLine();
-                String[] splitted = curLine.split("\t");
+                String[] splitted = curLine.split(delimiter);
                 if (!splitted[0].trim().equalsIgnoreCase("tit")) {
                     throw new IllegalArgumentException("No header found in source file !");
                 }
@@ -56,7 +57,7 @@ public class ReadTabDelimited {
             // Body read
             while (scan.hasNext()) {
                 String curLine = scan.nextLine();
-                String[] splitted = curLine.split("\t");
+                String[] splitted = curLine.split(delimiter);
 
                 FileDefinition row = new FileDefinition();
                 row.setColumnTit(splitted.length > getPositionColumnTit() ? splitted[getPositionColumnTit()] : "   ");

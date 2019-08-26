@@ -24,12 +24,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="Maven: com.intellij:forms_rt:7.0.3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: asm:asm-commons:3.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: asm:asm-tree:3.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: asm:asm:3.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.jgoodies:forms:1.1-preview" level="project" />
-    <orderEntry type="library" exported="" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -39,5 +33,11 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: com.intellij:forms_rt:7.0.3" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm-commons:3.0" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm-tree:3.0" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm:3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.jgoodies:forms:1.1-preview" level="project" />
+    <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
   </component>
 </module>
