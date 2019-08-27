@@ -1,4 +1,4 @@
-package constants;
+package exclusions;
 
 import model.ExclusionDefinition;
 

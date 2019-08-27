@@ -4,6 +4,7 @@ import model.ExclusionDefinition;
 import model.FileDefinition;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -14,15 +15,16 @@ public class ReadTabDelimited {
     private static final String delimiter = ";";
     static LinkedList<FileDefinition> fileDefinitions = new LinkedList<>();
 
-    static void readTabDelimitedFile(File file) throws IllegalArgumentException {
-        try {
+    static void readTabDelimitedFile(File file) throws IllegalArgumentException, FileNotFoundException {
+
             Scanner scan = new Scanner(file);
 
             // Header read
             if (scan.hasNext()) {
                 String curLine = scan.nextLine();
                 String[] splitted = curLine.split(delimiter);
-                if (!splitted[0].trim().equalsIgnoreCase("tit")) {
+                String firstColumn = splitted[0].trim().toLowerCase();
+                if (!firstColumn.equals("tit")) {
                     throw new IllegalArgumentException("No header found in source file !");
                 }
                 for (int i = 0; i < splitted.length; i++) {
@@ -70,9 +72,6 @@ public class ReadTabDelimited {
                 fileDefinitions.add(row);
             }
             scan.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static String formatNumericDigits(int numberOfDigits, String numberToConvert) {
