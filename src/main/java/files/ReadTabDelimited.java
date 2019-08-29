@@ -3,10 +3,11 @@ package files;
 import model.ExclusionDefinition;
 import model.FileDefinition;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 import static model.FileDefinitionColumns.*;
 
@@ -15,19 +16,27 @@ public class ReadTabDelimited {
     private static final String delimiter = ";";
     static LinkedList<FileDefinition> fileDefinitions = new LinkedList<>();
 
-    static void readTabDelimitedFile(File file) throws IllegalArgumentException, FileNotFoundException {
+    //TODO Change bufferedReader.readLine by Files.lines for better performance
+    // https://funnelgarden.com/java_read_file/#1a_FileReader_Default_Encoding
+    static void readTabDelimitedFileInputStream(File file) throws Exception {
 
-            Scanner scan = new Scanner(file);
+        FileInputStream fileInputStream = new FileInputStream(file);
 
-            // Header read
-            if (scan.hasNext()) {
-                String curLine = scan.nextLine();
-                String[] splitted = curLine.split(delimiter);
+        //specify CP-1252 (ANSI) encoding explicitly
+        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "CP1252");
+
+        try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            String line;
+
+            // read Header
+            if ((line = bufferedReader.readLine()) != null) {
+                String[] splitted = line.split(delimiter);
                 String firstColumn = splitted[0].trim().toLowerCase();
                 if (!firstColumn.equals("tit")) {
                     throw new IllegalArgumentException("No header found in source file !");
                 }
-                for (int i = 0; i < splitted.length; i++) {
+                for (int i = 0; i < splitted.length - 1; i++) {
+//                    System.out.println("Column[" + i + "] : " + splitted[i]);
                     switch (splitted[i].trim().toLowerCase()) {
                         case "tit":
                             setPositionColumnTit(i);
@@ -54,12 +63,10 @@ public class ReadTabDelimited {
                         splitted[getPositionColumnFCCG()],
                         "Total"
                 ));
-            }
 
-            // Body read
-            while (scan.hasNext()) {
-                String curLine = scan.nextLine();
-                String[] splitted = curLine.split(delimiter);
+            }
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] splitted = line.split(delimiter);
 
                 FileDefinition row = new FileDefinition();
                 row.setColumnTit(splitted.length > getPositionColumnTit() ? splitted[getPositionColumnTit()] : "   ");
@@ -71,7 +78,7 @@ public class ReadTabDelimited {
 
                 fileDefinitions.add(row);
             }
-            scan.close();
+        }
     }
 
     public static String formatNumericDigits(int numberOfDigits, String numberToConvert) {
@@ -90,6 +97,7 @@ public class ReadTabDelimited {
         return formatNumericDigits(11, Long.toString(sum));
     }
 
+    //TODO Replace method removeAllFileDefinitionByExclusionList by a filter (foreach) directly when reading the file line by line
     public static void removeAllFileDefinitionByExclusionList(LinkedList<ExclusionDefinition> exclusionList) throws ArrayIndexOutOfBoundsException {
 
         for (ExclusionDefinition exclusionDefinition : exclusionList) {

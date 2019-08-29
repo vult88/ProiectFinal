@@ -52,6 +52,7 @@ public class FileParser extends JDialog {
                 FilesHandler.saveFile(sourceFilePath);
             }
         });
+        //TODO Replace exclusion by a filter and add it when reading the file
         excludeDataFromTableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,6 +66,7 @@ public class FileParser extends JDialog {
                 }
             }
         });
+        //TODO Add a progress bar for reading and exclusion part
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -35,6 +35,7 @@ public class FilesHandler extends JFileChooser {
         }
     }
 
+    //TODO Replace Open file by only getting the Path and move reading in Exclusion part
     public static Path openFile() {
         JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showOpenDialog(null);
@@ -42,9 +43,9 @@ public class FilesHandler extends JFileChooser {
             selectedFile = fileChooser.getSelectedFile();
             treatFileException(selectedFile, file -> {
                 try {
-                    ReadTabDelimited.readTabDelimitedFile(selectedFile);
-                } catch (IllegalArgumentException e) {
-                    JOptionPane.showConfirmDialog(null, e.getMessage(), "Error",
+                    ReadTabDelimited.readTabDelimitedFileInputStream(selectedFile);
+                } catch (Exception e) {
+                    JOptionPane.showConfirmDialog(null, e.getClass() + " - " + e.getMessage(), "Error",
                             JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
                 }
             });
@@ -70,6 +71,7 @@ public class FilesHandler extends JFileChooser {
         }
     }
 
+    //TODO Search for an optimized writing method for big files
     private static void writeToFile(File selectedFile) throws IOException {
         if (fileDefinitions.size() == 0) {
             throw new IOException("Source file is empty !");
