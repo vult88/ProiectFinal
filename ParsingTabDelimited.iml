@@ -34,7 +34,12 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: com.intellij:javac2:17.1.5" level="project" />
-    <orderEntry type="library" name="Maven: com.intellij:forms_rt:17.1.5" level="project" />
+    <orderEntry type="library" name="Maven: com.intellij:forms_rt:6.0.5" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm-commons:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm-tree:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: asm:asm:2.2.3" level="project" />
+    <orderEntry type="library" name="Maven: com.jgoodies:forms:1.0.7" level="project" />
+    <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:asm-all:17.1.5" level="project" />
   </component>
 </module>
