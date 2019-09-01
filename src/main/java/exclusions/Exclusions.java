@@ -7,10 +7,40 @@ import java.util.LinkedList;
 import static files.ReadTabDelimited.formatNumericDigits;
 
 public class Exclusions {
-    private final LinkedList<ExclusionDefinition> exclusionList = new LinkedList<>();
+    private static final LinkedList<ExclusionDefinition> exclusionList = new LinkedList<>();
 
-    public LinkedList<ExclusionDefinition> getExclusionList() {
+    public static LinkedList<ExclusionDefinition> getExclusionList() {
+        if (exclusionList.isEmpty()) {
+            initializeExclusionList();
+        }
         return exclusionList;
+    }
+
+    public static void initializeExclusionList() {
+        exclusionList.clear();
+        exclusionList.add(new ExclusionDefinition("99999", ""));
+        exclusionList.add(new ExclusionDefinition("99999", "00000"));
+        exclusionList.add(new ExclusionDefinition("30003", "99999"));
+        exclusionList.add(new ExclusionDefinition("30076", "02759"));
+        exclusionList.add(new ExclusionDefinition("10268", "02019"));
+        exclusionList.add(new ExclusionDefinition("10268", "02040"));
+        exclusionList.add(new ExclusionDefinition("10268", "04212"));
+        exclusionList.add(new ExclusionDefinition("10268", "04370"));
+        exclusionList.add(new ExclusionDefinition("30077", "02040"));
+        exclusionList.add(new ExclusionDefinition("30076", "04153"));
+        exclusionList.add(new ExclusionDefinition("13259", "02181"));
+        for (int i = 1; i < 2000; i++) {
+            exclusionList.add(new ExclusionDefinition("99999", formatNumericDigits(5, Integer.toString(i))));
+        }
+    }
+
+    public static boolean isPresentInExclusionList(String Etab, String Agence) {
+        for (ExclusionDefinition exclusion : exclusionList) {
+            if (("99999").equals(exclusion.getEtab()) && Agence.equals(exclusion.getAgence())
+                    || (Etab.equals(exclusion.getEtab()) && ("99999").equals(exclusion.getAgence())))
+                return true;
+        }
+        return false;
     }
 
     private String[][] getExclusionListAsArray() {
@@ -24,17 +54,17 @@ public class Exclusions {
         return exclusionListAsArray;
     }
 
-    public String[][] addExclusionToList(ExclusionDefinition exclusionList) {
-        if (exclusionList.getEtab().trim().equalsIgnoreCase("all")) {
-            exclusionList.setEtab("99999");
+    public String[][] addExclusionToList(ExclusionDefinition exclusionListPassed) {
+        if (exclusionListPassed.getEtab().trim().equalsIgnoreCase("all")) {
+            exclusionListPassed.setEtab("99999");
         }
-        if (exclusionList.getAgence().trim().equalsIgnoreCase("all")) {
-            exclusionList.setAgence("99999");
+        if (exclusionListPassed.getAgence().trim().equalsIgnoreCase("all")) {
+            exclusionListPassed.setAgence("99999");
         }
-        this.exclusionList.add(
+        exclusionList.add(
                 new ExclusionDefinition(
-                        !exclusionList.getEtab().isEmpty() ? formatNumericDigits(5, exclusionList.getEtab()) : exclusionList.getEtab(),
-                        !exclusionList.getAgence().isEmpty() ? formatNumericDigits(5, exclusionList.getAgence()) : exclusionList.getAgence()
+                        !exclusionListPassed.getEtab().isEmpty() ? formatNumericDigits(5, exclusionListPassed.getEtab()) : exclusionListPassed.getEtab(),
+                        !exclusionListPassed.getAgence().isEmpty() ? formatNumericDigits(5, exclusionListPassed.getAgence()) : exclusionListPassed.getAgence()
                 )
         );
         return getExclusionListAsArray();
@@ -49,23 +79,5 @@ public class Exclusions {
         }
         exclusionList.remove(exclusionDefinition);
         return getExclusionListAsArray();
-    }
-
-    public void initializeExclusionList() {
-        this.exclusionList.clear();
-        this.exclusionList.add(new ExclusionDefinition("99999", ""));
-        this.exclusionList.add(new ExclusionDefinition("99999", "00000"));
-        this.exclusionList.add(new ExclusionDefinition("30003", "99999"));
-        this.exclusionList.add(new ExclusionDefinition("30076", "02759"));
-        this.exclusionList.add(new ExclusionDefinition("10268", "02019"));
-        this.exclusionList.add(new ExclusionDefinition("10268", "02040"));
-        this.exclusionList.add(new ExclusionDefinition("10268", "04212"));
-        this.exclusionList.add(new ExclusionDefinition("10268", "04370"));
-        this.exclusionList.add(new ExclusionDefinition("30077", "02040"));
-        this.exclusionList.add(new ExclusionDefinition("30076", "04153"));
-        this.exclusionList.add(new ExclusionDefinition("13259", "02181"));
-        for (int i = 1; i < 2000; i++) {
-            this.exclusionList.add(new ExclusionDefinition("99999", formatNumericDigits(5, Integer.toString(i))));
-        }
     }
 }

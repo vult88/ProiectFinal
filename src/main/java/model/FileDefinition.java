@@ -90,7 +90,7 @@ public class FileDefinition implements Serializable {
                 this.getColumnAgence() + '\t' +
                 this.getColumnFCCD() + '\t' +
                 this.getColumnFCCG() + '\t' +
-                this.getColumnTotal() + '\n';
+                this.getColumnTotal();
     }
 
     @Override

@@ -16,7 +16,6 @@ import static files.ReadTabDelimited.fileDefinitions;
 
 /**
  * Created by Vult on 2018-06-18.
- *
  */
 public class FilesHandler extends JFileChooser {
     private static File selectedFile;
@@ -35,23 +34,31 @@ public class FilesHandler extends JFileChooser {
         }
     }
 
-    //TODO Replace Open file by only getting the Path and move reading in Exclusion part
     public static Path openFile() {
         JFileChooser fileChooser = createFileChooser();
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
             treatFileException(selectedFile, file -> {
-                try {
-                    ReadTabDelimited.readTabDelimitedFileInputStream(selectedFile);
-                } catch (Exception e) {
-                    JOptionPane.showConfirmDialog(null, e.getClass() + " - " + e.getMessage(), "Error",
-                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-                }
             });
             return Paths.get(fileChooser.getSelectedFile().toString());
         }
         return null;
+    }
+
+    public static void readFile(File selectedFile) {
+        try {
+            long startTime = System.nanoTime();
+            ReadTabDelimited.readTabDelimitedFile(selectedFile);
+            long endTime = System.nanoTime();
+
+            long duration = (endTime - startTime) / 1000000;
+
+            System.out.println("Read file took : " + duration + " ms");
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e.getClass() + " - " + e.getMessage(), "Error",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     //    Method that implements a Consumer to treat errors from File Open/Save operations.
@@ -71,7 +78,6 @@ public class FilesHandler extends JFileChooser {
         }
     }
 
-    //TODO Search for an optimized writing method for big files
     private static void writeToFile(File selectedFile) throws IOException {
         if (fileDefinitions.size() == 0) {
             throw new IOException("Source file is empty !");
