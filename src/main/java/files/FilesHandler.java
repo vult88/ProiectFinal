@@ -30,7 +30,9 @@ public class FilesHandler extends JFileChooser {
                 if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(null, "Are you sure you want to overwrite " + selectedFile.getAbsolutePath() + "?", "Confirm Save",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) ;
             }
+            FilesHandler.readFile(new File(sourceFileName.toString()));
             treatFileException(selectedFile, file -> writeToFile(selectedFile));
+            JOptionPane.showMessageDialog(null, "File has been parsed and saved.");
         }
     }
 

@@ -76,20 +76,20 @@ public class FileDefinition implements Serializable {
     }
 
     public String toStringNewLine() {
-        return this.getColumnTit() + '\t' +
-                this.getColumnEtab() + '\t' +
-                this.getColumnAgence() + '\t' +
-                this.getColumnFCCD() + '\t' +
-                this.getColumnFCCG() + '\t' +
-                this.getColumnTotal() + '\n';
+        return this.getColumnTit() + '\u0009' +
+                this.getColumnEtab() + '\u0009' +
+                this.getColumnAgence() + '\u0009' +
+                this.getColumnFCCD() + '\u0009' +
+                this.getColumnFCCG() + '\u0009' +
+                this.getColumnTotal() + "\r\n";
     }
 
     public String toStringEndOfFile() {
-        return this.getColumnTit() + '\t' +
-                this.getColumnEtab() + '\t' +
-                this.getColumnAgence() + '\t' +
-                this.getColumnFCCD() + '\t' +
-                this.getColumnFCCG() + '\t' +
+        return this.getColumnTit() + '\u0009' +
+                this.getColumnEtab() + '\u0009' +
+                this.getColumnAgence() + '\u0009' +
+                this.getColumnFCCD() + '\u0009' +
+                this.getColumnFCCG() + '\u0009' +
                 this.getColumnTotal();
     }
 
