@@ -20,15 +20,16 @@ public class Exclusions {
         exclusionList.clear();
         exclusionList.add(new ExclusionDefinition("99999", ""));
         exclusionList.add(new ExclusionDefinition("99999", "00000"));
-        exclusionList.add(new ExclusionDefinition("30003", "99999"));
-        exclusionList.add(new ExclusionDefinition("30076", "02759"));
+        exclusionList.add(new ExclusionDefinition("99999", "30076"));
         exclusionList.add(new ExclusionDefinition("10268", "02019"));
         exclusionList.add(new ExclusionDefinition("10268", "02040"));
         exclusionList.add(new ExclusionDefinition("10268", "04212"));
         exclusionList.add(new ExclusionDefinition("10268", "04370"));
-        exclusionList.add(new ExclusionDefinition("30077", "02040"));
-        exclusionList.add(new ExclusionDefinition("30076", "04153"));
         exclusionList.add(new ExclusionDefinition("13259", "02181"));
+        exclusionList.add(new ExclusionDefinition("30003", "99999"));
+        exclusionList.add(new ExclusionDefinition("30076", "02759"));
+        exclusionList.add(new ExclusionDefinition("30076", "04153"));
+        exclusionList.add(new ExclusionDefinition("30077", "02040"));
         for (int i = 1; i < 2000; i++) {
             exclusionList.add(new ExclusionDefinition("99999", formatNumericDigits(5, Integer.toString(i))));
         }
@@ -37,7 +38,8 @@ public class Exclusions {
     public static boolean isPresentInExclusionList(String Etab, String Agence) {
         for (ExclusionDefinition exclusion : exclusionList) {
             if (("99999").equals(exclusion.getEtab()) && Agence.equals(exclusion.getAgence())
-                    || (Etab.equals(exclusion.getEtab()) && ("99999").equals(exclusion.getAgence())))
+                    || (Etab.equals(exclusion.getEtab()) && ("99999").equals(exclusion.getAgence()))
+                    || (Etab.equals(exclusion.getEtab()) && Agence.equals(exclusion.getAgence())))
                 return true;
         }
         return false;
