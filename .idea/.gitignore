@@ -1,0 +1,11 @@
+# Default ignored files
+/workspace.xml
+/Maven_*.xml
+.classpath
+.gitignore
+.project
+.xml
+.idea/
+libraries/*.xml
+*.iml
+*.iws

@@ -38,23 +38,19 @@ public class FileParser extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sourceFilePath = FilesHandler.openFile();
-                textSourceFile.setText(sourceFilePath.toString());
+                if (sourceFilePath != null) {
+                    textSourceFile.setText(sourceFilePath.toString());
+                }
                 refreshModel();
             }
         });
         saveFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                long startTime = System.nanoTime();
 
                 if (sourceFilePath != null && !sourceFilePath.toString().isEmpty()) {
 //                    FilesHandler.readFile(new File(sourceFilePath.toString()));
                     FilesHandler.saveFile(sourceFilePath);
-
-                    long endTime = System.nanoTime();
-                    long duration = (endTime - startTime) / 1000000;
-
-                    System.out.println("Parsed and Save file took : " + duration + " ms");
                 } else {
                     JOptionPane.showConfirmDialog(null, "Please select a source file ! ", "Error",
                             JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);

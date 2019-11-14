@@ -180,21 +180,32 @@
         </plugins>
     </build>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.intellij/javac2 -->
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>javac2</artifactId>
-            <version>LATEST</version>
+            <version>7.0.3</version>
         </dependency>
+
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms_rt</artifactId>
             <version>LATEST</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.intellij.deps/asm-all -->
+        <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-all -->
         <dependency>
-            <groupId>com.intellij</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
-            <version>LATEST</version>
+            <version>6.0_BETA</version>
         </dependency>
+
+
+        <!--        <dependency>-->
+        <!--            <groupId>com.intellij</groupId>-->
+        <!--            <artifactId>asm-all</artifactId>-->
+        <!--            <version>LATEST</version>-->
+        <!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/com.intellij/forms_rt -->
         <dependency>
             <groupId>com.intellij</groupId>

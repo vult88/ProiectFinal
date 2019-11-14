@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalTime;
 
 import static files.ReadTabDelimited.fileDefinitions;
 
@@ -19,25 +21,29 @@ import static files.ReadTabDelimited.fileDefinitions;
  */
 public class FilesHandler extends JFileChooser {
     private static File selectedFile;
+    private static File currentPath = new File(FilesHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 
     public static void saveFile(Path sourceFileName) {
         JFileChooser fileChooser = createFileChooser();
-        fileChooser.setSelectedFile(new File(sourceFileName.toString()));
+        fileChooser.setSelectedFile(new File(sourceFileName.getFileName().toString().replace(".txt", "_parsed.txt")));
+        fileChooser.setCurrentDirectory(selectedFile);
         int result = fileChooser.showSaveDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
             if (selectedFile.exists()) {
                 if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(null, "Are you sure you want to overwrite " + selectedFile.getAbsolutePath() + "?", "Confirm Save",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) ;
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
+                    parseFile(sourceFileName);
+                }
+            } else {
+                parseFile(sourceFileName);
             }
-            FilesHandler.readFile(new File(sourceFileName.toString()));
-            treatFileException(selectedFile, file -> writeToFile(selectedFile));
-            JOptionPane.showMessageDialog(null, "File has been parsed and saved.");
         }
     }
 
     public static Path openFile() {
         JFileChooser fileChooser = createFileChooser();
+        fileChooser.setCurrentDirectory(currentPath);
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
@@ -48,15 +54,9 @@ public class FilesHandler extends JFileChooser {
         return null;
     }
 
-    public static void readFile(File selectedFile) {
+    private static void readFile(File selectedFile) {
         try {
-            long startTime = System.nanoTime();
             ReadTabDelimited.readTabDelimitedFile(selectedFile);
-            long endTime = System.nanoTime();
-
-            long duration = (endTime - startTime) / 1000000;
-
-            System.out.println("Read file took : " + duration + " ms");
         } catch (Exception e) {
             JOptionPane.showConfirmDialog(null, e.getClass() + " - " + e.getMessage(), "Error",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
@@ -104,5 +104,18 @@ public class FilesHandler extends JFileChooser {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(fileFilter);
         return fileChooser;
+    }
+
+    private static void parseFile(Path sourceFileName) {
+        LocalTime startLogTime = LocalTime.now();
+
+        FilesHandler.readFile(new File(sourceFileName.toString()));
+        treatFileException(selectedFile, file -> writeToFile(selectedFile));
+
+        LocalTime endLogTime = LocalTime.now();
+        Duration duration = Duration.between(startLogTime, endLogTime);
+        double durationDouble = Double.parseDouble(duration.getSeconds() + "." + duration.getNano());
+
+        JOptionPane.showMessageDialog(null, "File has been parsed in " + durationDouble + " seconds.");
     }
 }
